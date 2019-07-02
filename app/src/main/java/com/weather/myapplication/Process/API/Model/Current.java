@@ -1,6 +1,17 @@
 package com.weather.myapplication.Process.API.Model;
 
 public class Current {
+
+    Location location;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     String last_updated_epoch;
     String last_updated;
     String temp_c;
