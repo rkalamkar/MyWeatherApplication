@@ -23,6 +23,10 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.weather.myapplication.Process.API.Model.CurrentResponse;
+import com.weather.myapplication.Process.API.Model.ForeCastResponse;
+import com.weather.myapplication.Process.DataChangeListener;
+import com.weather.myapplication.Process.Query.LocationQuery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-    private FusedLocationProviderClient fusedLocationClient;
+    LocationQuery locationQuery;
     BottomSheetBehavior bottomSheetBehavior;
     LinearLayout bottomLinearLayout;
     RelativeLayout upperLinearLayout;
@@ -41,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         bottomLinearLayout = (LinearLayout) findViewById(R.id.mainLayout);
         upperLinearLayout = (RelativeLayout) findViewById(R.id.upperLayout);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomLinearLayout);
 
+        locationQuery = new LocationQuery(this);
+        locationQuery.getCurrentLatLong();
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -63,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-
-        getCurrentLatLong();
     }
 
     public void bottomSheetCall(boolean isExpand) {
@@ -83,7 +85,12 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1000: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getCurrentLatLong();
+                    if (locationQuery != null)
+                        locationQuery.getCurrentLatLong();
+                    else {
+                        locationQuery = new LocationQuery(this);
+                        locationQuery.getCurrentLatLong();
+                    }
                 } else {
                     Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
                 }
@@ -92,63 +99,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    private void getCurrentLatLong() {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M &&
-                        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
-                } else {
-                    fusedLocationClient.getLastLocation()
-                            .addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-                                @Override
-                                public void onSuccess(Location location) {
-                                    try {
-                                        String city = getCurrentLocation(location.getLatitude(), location.getLongitude());
-                                    } catch (
-                                            Exception e) {
-                                        e.printStackTrace();
-                                        MainActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(MainActivity.this, "Not found", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-
-                }
-            }
-        };
-        thread.start();
-
-
-    }
-
-    private String getCurrentLocation(double latitude, double longitude) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses;
-        String cityName = "";
-
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 10);
-            if (addresses.size() > 0) {
-                for (Address address : addresses) {
-                    if (address.getLocality() != null && address.getLocality().length() > 0) {
-                        cityName = address.getLocality();
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return cityName;
-    }
-
+    
 }
