@@ -10,8 +10,13 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,18 +31,51 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView view;
-
-
     private FusedLocationProviderClient fusedLocationClient;
+    BottomSheetBehavior bottomSheetBehavior;
+    LinearLayout bottomLinearLayout;
+    RelativeLayout upperLinearLayout;
+    ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        view = (TextView) findViewById(R.id.textView);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        bottomLinearLayout = (LinearLayout) findViewById(R.id.mainLayout);
+        upperLinearLayout = (RelativeLayout) findViewById(R.id.upperLayout);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomLinearLayout);
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState > BottomSheetBehavior.STATE_DRAGGING)
+                    bottomSheet.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        }
+                    });
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
         getCurrentLatLong();
+    }
+
+    public void bottomSheetCall(boolean isExpand) {
+        if (isExpand)
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        else
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    public void showResult() {
+        bottomSheetCall(true);
     }
 
     @Override
@@ -70,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                                 public void onSuccess(Location location) {
                                     try {
                                         String city = getCurrentLocation(location.getLatitude(), location.getLongitude());
-                                        view.setText(city);
                                     } catch (
                                             Exception e) {
                                         e.printStackTrace();

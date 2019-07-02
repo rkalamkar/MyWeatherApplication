@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/upperLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/textViewTempreture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/padding_56"
+        android:fontFamily="sans-serif-black"
+        android:text="30"
+        android:textColor="@color/bottomSheet_TextColor"
+        android:textSize="@dimen/textSize_96" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewTempreture"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/padding_62"
+        android:text="Mumbai"
+        android:textColor="@color/city_textColor"
+        android:textSize="@dimen/textSize_36" />
+
+</RelativeLayout>

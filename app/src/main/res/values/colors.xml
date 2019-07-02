@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="errorScreenBg">#E85959</color>
+    <color name="appBackground">#f5f6f7</color>
+    <color name="whiteColor">#FFFFFF</color>
+    <color name="retryBg">#4a4a4a</color>
+    <color name="bottomSheet_TextColor">#2a2a2a</color>
+    <color name="city_textColor">#556799</color>
+
 </resources>
