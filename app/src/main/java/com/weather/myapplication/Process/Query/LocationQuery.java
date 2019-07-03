@@ -16,6 +16,8 @@ import com.weather.myapplication.MainActivity;
 import com.weather.myapplication.Process.API.Model.CurrentResponse;
 import com.weather.myapplication.Process.API.Model.ForeCastResponse;
 import com.weather.myapplication.Process.DataChangeListener;
+import com.weather.myapplication.Process.ProcessListener;
+import com.weather.myapplication.Utils.NetworkConfig;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,9 +27,14 @@ public class LocationQuery implements DataChangeListener {
 
     private FusedLocationProviderClient fusedLocationClient;
     Activity activity;
+    String currentCity = "";
+    String lat = "";
+    String lng = "";
+    ProcessListener processListener;
 
-    public LocationQuery(Activity activity) {
+    public LocationQuery(Activity activity, ProcessListener processListener) {
         this.activity = activity;
+        this.processListener = processListener;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
     }
 
@@ -45,7 +52,10 @@ public class LocationQuery implements DataChangeListener {
                                 @Override
                                 public void onSuccess(Location location) {
                                     try {
-                                        String city = getCurrentLocation(location.getLatitude(), location.getLongitude());
+                                        currentCity = getCurrentLocation(location.getLatitude(), location.getLongitude());
+                                        lat = "" + location.getLatitude();
+                                        lng = "" + location.getLongitude();
+                                        getCurrentData();
                                     } catch (
                                             Exception e) {
                                         e.printStackTrace();
@@ -63,8 +73,37 @@ public class LocationQuery implements DataChangeListener {
             }
         };
         thread.start();
+    }
 
+    public void getCurrentData() {
 
+        if (!new NetworkConfig().isInternetAvailable(activity)) {
+            processListener.showError(true);
+            return;
+        }
+        APIQuery apiQuery = new APIQuery();
+        if (!currentCity.isEmpty())
+            apiQuery.getCurrentData(this, activity, currentCity);
+        else if (!lat.isEmpty() && !lng.isEmpty())
+            apiQuery.getCurrentData(this, activity, lat + "," + lng);
+        else
+            processListener.showError(true);
+        getForeCastData();
+    }
+
+    public void getForeCastData() {
+
+        if (!new NetworkConfig().isInternetAvailable(activity)) {
+            processListener.showError(true);
+            return;
+        }
+        APIQuery apiQuery = new APIQuery();
+        if (!currentCity.isEmpty())
+            apiQuery.getForeCastData(this, activity, currentCity);
+        else if (!lat.isEmpty() && !lng.isEmpty())
+            apiQuery.getForeCastData(this, activity, lat + "," + lng);
+        else
+            processListener.showError(true);
     }
 
     private String getCurrentLocation(double latitude, double longitude) {
@@ -91,16 +130,26 @@ public class LocationQuery implements DataChangeListener {
 
     @Override
     public void onCurrentResponseReceived(CurrentResponse currentResponse) {
-        
+        if (currentResponse == null) {
+            processListener.showError(true);
+            return;
+        }
+        processListener.showCurrentWeather(currentResponse.getCurrent().getTemp_c(), currentResponse.getLocation().getName());
+        processListener.showError(false);
     }
 
     @Override
     public void onForeCastResponseReceived(ForeCastResponse foreCastResponse) {
-
+        if (foreCastResponse == null) {
+            processListener.showError(true);
+            return;
+        }
+        processListener.showForeCastData(foreCastResponse);
+        processListener.showError(false);
     }
 
     @Override
     public void onError(String message) {
-
+        processListener.showError(true);
     }
 }

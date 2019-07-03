@@ -14,7 +14,8 @@
         android:fontFamily="sans-serif-thin"
         android:text="@string/errorMsg"
         android:textColor="@color/whiteColor"
-        android:textSize="@dimen/textSize_54" />
+        android:textSize="@dimen/textSize_54"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/buttonRetry"
@@ -25,5 +26,6 @@
         android:layout_marginTop="@dimen/padding_44"
         android:background="@color/retryBg"
         android:text="@string/retrybutton"
+        android:visibility="gone"
         android:textColor="@color/whiteColor" />
 </RelativeLayout>

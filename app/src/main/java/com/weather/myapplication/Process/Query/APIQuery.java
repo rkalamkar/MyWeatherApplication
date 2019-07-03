@@ -22,7 +22,7 @@ public class APIQuery {
         URL url = null;
 
         try {
-            url = new URL("http://api.apixu.com/v1/current.json");
+            url = new URL("https://api.apixu.com/v1/current.json");
 
 
             String baseUrl = url.getProtocol() + "://" + url.getHost();
@@ -55,13 +55,14 @@ public class APIQuery {
     public void getForeCastData(final DataChangeListener dataChangeListener, Activity activity, String city) {
         URL url = null;
         try {
-            url = new URL("http://api.apixu.com/v1/forecast.json?Key=a8918b6f226548d1b7a45149190207&q=Jalna&days=4");
+            url = new URL("https://api.apixu.com/v1/forecast.json?Key=a8918b6f226548d1b7a45149190207&q=Jalna&days=4");
             String baseUrl = url.getProtocol() + "://" + url.getHost();
             String apiName = url.getPath();
 
             HashMap<String, String> map = new HashMap<>();
             map.put("Key", activity.getResources().getString(R.string.api_id));
             map.put("q", city);
+            map.put("days", "4");
 
             Query query = APIClient.getClient(baseUrl).create(Query.class);
             Call<ForeCastResponse> foreCastResponseCall = query.getForeCastData(apiName, map);

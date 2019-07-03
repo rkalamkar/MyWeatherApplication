@@ -9,8 +9,7 @@
 
     <include
         android:id="@+id/errorLayout"
-        layout="@layout/error_layout"
-        android:visibility="gone" />
+        layout="@layout/error_layout" />
 
     <ProgressBar
         android:id="@+id/progressBar"

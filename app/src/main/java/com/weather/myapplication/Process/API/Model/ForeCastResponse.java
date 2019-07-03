@@ -3,7 +3,7 @@ package com.weather.myapplication.Process.API.Model;
 public class ForeCastResponse {
     Location location;
     Current current;
-    ForCast foreCast;
+    ForCast forecast;
 
     public Location getLocation() {
         return location;
@@ -22,10 +22,10 @@ public class ForeCastResponse {
     }
 
     public ForCast getForeCast() {
-        return foreCast;
+        return forecast;
     }
 
     public void setForeCast(ForCast foreCast) {
-        this.foreCast = foreCast;
+        this.forecast = foreCast;
     }
 }
