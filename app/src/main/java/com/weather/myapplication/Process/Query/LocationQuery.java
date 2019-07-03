@@ -59,12 +59,7 @@ public class LocationQuery implements DataChangeListener {
                                     } catch (
                                             Exception e) {
                                         e.printStackTrace();
-                                        activity.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(activity, "Not found", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                        processListener.showError(true);
                                     }
                                 }
                             });
@@ -75,10 +70,20 @@ public class LocationQuery implements DataChangeListener {
         thread.start();
     }
 
+    public void showInternetMessage() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, "No internet connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public void getCurrentData() {
 
         if (!new NetworkConfig().isInternetAvailable(activity)) {
             processListener.showError(true);
+            showInternetMessage();
             return;
         }
         APIQuery apiQuery = new APIQuery();
@@ -95,6 +100,7 @@ public class LocationQuery implements DataChangeListener {
 
         if (!new NetworkConfig().isInternetAvailable(activity)) {
             processListener.showError(true);
+            showInternetMessage();
             return;
         }
         APIQuery apiQuery = new APIQuery();
@@ -123,6 +129,7 @@ public class LocationQuery implements DataChangeListener {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            processListener.showError(true);
         }
 
         return cityName;

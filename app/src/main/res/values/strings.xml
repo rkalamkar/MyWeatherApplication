@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Weather Application</string>
+    <string name="app_name">My Weather</string>
     <string name="api_id">a8918b6f226548d1b7a45149190207</string>
     <string name="errorMsg">Something \nwent wrong \nat our end!</string>
     <string name="retrybutton">Retry</string>

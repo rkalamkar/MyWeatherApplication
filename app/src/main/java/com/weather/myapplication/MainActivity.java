@@ -42,47 +42,48 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ProcessListener, View.OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class MainActivity extends AppCompatActivity implements ProcessListener {
+
+    @BindView(R.id.progressBar)
+    ProgressBar mProgressBar;
+
+    @BindView(R.id.buttonRetry)
+    Button mRetryButton;
+
+    @BindView(R.id.recyclerView)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.textViewCityName)
+    TextView mCityName;
+
+    @BindView(R.id.textViewTempreture)
+    TextView mCityTemperature;
+
+    @BindView(R.id.errorMessage)
+    TextView mErrorMessage;
+
+    @BindView(R.id.mainLayout)
+    LinearLayout bottomLinearLayout;
+
+    @BindView(R.id.errorLayout)
+    View eView;
+
     LocationQuery locationQuery;
     BottomSheetBehavior bottomSheetBehavior;
-    LinearLayout bottomLinearLayout;
-    ProgressBar mProgressBar;
-    Button mRetryButton;
-    TextView mCityName, mCityTemperature, mErrorMessage;
-    RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
-
-        callData();
-        stopScroll();
-    }
-
-    View eView;
-    View bView;
-    View uView;
-    public void init() {
-
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-
-        uView = findViewById(R.id.cityTempreture);
-        mCityName = (TextView) uView.findViewById(R.id.textViewCityName);
-        mCityTemperature = (TextView) uView.findViewById(R.id.textViewTempreture);
-
-        bView = findViewById(R.id.bottomLayout);
-        bottomLinearLayout = (LinearLayout) bView.findViewById(R.id.mainLayout);
-        mRecyclerView = (RecyclerView) bView.findViewById(R.id.recyclerView);
-
+        ButterKnife.bind(this);
+        showError(false);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomLinearLayout);
-
-        eView = findViewById(R.id.errorLayout);
-
-        mErrorMessage = (TextView) eView.findViewById(R.id.errorMessage);
-        mRetryButton = (Button) eView.findViewById(R.id.buttonRetry);
-        mRetryButton.setOnClickListener(this);
+        stopScroll();
+        callData();
     }
 
     public void stopScroll() {
@@ -118,9 +119,9 @@ public class MainActivity extends AppCompatActivity implements ProcessListener, 
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     callData();
                 } else {
+                    showError(true);
                     Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
                 }
-
                 break;
             }
         }
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements ProcessListener, 
     @Override
     public void showError(boolean isShow) {
         if (isShow) {
+            eView.setVisibility(View.VISIBLE);
             mRetryButton.setVisibility(View.VISIBLE);
             mErrorMessage.setVisibility(View.VISIBLE);
         } else {
@@ -176,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements ProcessListener, 
         }
     }
 
-    @Override
+    @OnClick(R.id.buttonRetry)
     public void onClick(View v) {
         if (v.getId() == R.id.buttonRetry) {
             callData();
